@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: ZIM 服务端 API - 共享组件
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+# 共享的服务器配置
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 统一接入地址
+
+components:
+  # 共享的参数定义
+  parameters:
+    AppId:
+      name: AppId
+      in: query
+      description: AppId，ZEGO 分配的用户唯一凭证。
+      required: true
+      schema:
+        type: integer
+        format: uint32
+
+    SignatureNonce:
+      name: SignatureNonce
+      in: query
+      description: 随机字符串。
+      required: true
+      schema:
+        type: string
+
+    Timestamp:
+      name: Timestamp
+      in: query
+      description: Unix 时间戳，单位为秒。最多允许 10 分钟的误差。
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+    SignatureVersion:
+      name: SignatureVersion
+      in: query
+      description: 签名版本号，默认值为 2.0。
+      required: true
+      schema:
+        type: string
+        enum: ["2.0"]
+
+    Signature:
+      name: Signature
+      in: query
+      description: 签名，用于验证请求的合法性。
+      required: true
+      schema:
+        type: string
+
+    IsTest:
+      name: IsTest
+      in: query
+      description: 是否为测试环境。
+      required: false
+      schema:
+        type: integer
+        enum: [0, 1]
+        default: 0
+
+  # 共享的Schema定义
+  schemas:
+    # 标准响应结构
+    StandardResponse:
+      type: object
+      required:
+        - Code
+        - Message
+        - RequestId
+      properties:
+        Code:
+          type: integer
+          description: 返回码，0 表示成功。
+          example: 0
+        Message:
+          type: string
+          description: 请求结果的说明信息。
+          example: "success"
+        RequestId:
+          type: string
+          description: 请求 ID。
+          example: "343649807833778782"
+
+    # 用户信息
+    UserInfo:
+      type: object
+      required:
+        - UserId
+      properties:
+        UserId:
+          type: string
+          description: 用户 ID，长度不超过 32 字节。
+          maxLength: 32
+          example: "user123"
+        UserName:
+          type: string
+          description: 用户名称，长度不超过 256 字节。
+          maxLength: 256
+          example: "张三"
+        UserAvatar:
+          type: string
+          description: 用户头像地址，长度不超过 500 字节。
+          maxLength: 500
+          example: "https://example.com/avatar.jpg"
+
+    # 消息体基础结构
+    MessageBody:
+      type: object
+      description: 消息内容，具体参数格式请参考 MessageBody 说明。
+      properties:
+        Message:
+          type: string
+          description: 消息内容
+          example: "hello world"
+        ExtendedData:
+          type: string
+          description: 扩展数据
+          example: "extended_data"
+        OfflinePush:
+          $ref: "#/components/schemas/OfflinePush"
+
+    # 离线推送配置
+    OfflinePush:
+      type: object
+      properties:
+        Enable:
+          type: integer
+          description: 是否启用离线推送
+          enum: [0, 1]
+          example: 0
+        Title:
+          type: string
+          description: 推送标题
+          example: "新消息"
+        Content:
+          type: string
+          description: 推送内容
+          example: "您有一条新消息"
+        Payload:
+          type: string
+          description: 推送载荷
+          example: "custom_data"
+
+    # 错误信息
+    ErrorInfo:
+      type: object
+      properties:
+        UserId:
+          type: string
+          description: 操作失败的用户 ID
+          example: "user123"
+        SubCode:
+          type: integer
+          description: 具体的错误码
+          example: 660000012
+        SubMessage:
+          type: string
+          description: 错误说明
+          example: "user length limit"
+
+    # 发送消息选项
+    SendMsgOptions:
+      type: object
+      properties:
+        NoUnread:
+          type: boolean
+          description: 此消息是否会增加接收方的消息未读数。false（默认值）会增加，true 不会增加。
+          default: false
+          example: false
+
+    # 审核信息
+    AuditInfo:
+      type: object
+      properties:
+        Index:
+          type: integer
+          description: 审核失败的消息索引
+          example: 0
+        Reason:
+          type: string
+          description: 拒绝原因
+          example: "内容违规"
+
+    # 群组信息
+    GroupInfo:
+      type: object
+      properties:
+        GroupId:
+          type: string
+          description: 群组 ID
+          example: "group123"
+        GroupName:
+          type: string
+          description: 群组名称
+          example: "测试群组"
+        GroupAvatarUrl:
+          type: string
+          description: 群组头像 URL
+          example: "https://example.com/group_avatar.jpg"
+
+    # 房间信息
+    RoomInfo:
+      type: object
+      properties:
+        RoomId:
+          type: string
+          description: 房间 ID
+          example: "room123"
+        RoomName:
+          type: string
+          description: 房间名称
+          example: "测试房间"
+
+    # 会话信息
+    ConversationInfo:
+      type: object
+      properties:
+        ConversationId:
+          type: string
+          description: 会话 ID
+          example: "conversation123"
+        ConversationType:
+          type: integer
+          description: 会话类型
+          enum: [0, 1, 2]
+          example: 0
+
+    # 错误响应
+    ErrorResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: 错误码
+          example: 400
+        Message:
+          type: string
+          description: 错误信息
+          example: "Invalid request parameters"
+        RequestId:
+          type: string
+          description: 请求 ID
+          example: "3151527792559699733"

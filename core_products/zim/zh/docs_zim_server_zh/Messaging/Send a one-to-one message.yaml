@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: Messaging
+    description: 消息管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Messaging
+      summary: 发送单聊消息
+      description: |
+        发送 1v1 单聊消息，支持向单个用户、或批量向多个用户发送消息。
+
+        目标客户端将通过以下 ZIM SDK 的回调接口，接收单聊消息的通知。
+
+        | iOS-25% | Android-25% | macOS-25% | Windows-25% |
+        |-----|---------|-------|---------|
+        | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-peer-message-received-info-from-user-id) | [onPeerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-peer-message-received) | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-peer-message-received-info-from-user-id) | [onPeerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-peer-message-received) |
+
+        | Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+        |-----|---------|-------|---------|
+        | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#peer-message-received) | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#peer-message-received) | [onPeerMessageReceived](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onPeerMessageReceived.html) | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#peer-message-received) |
+
+        | Unity3D-25% | uni-app \| uni-app x-25% | HarmonyOS-25% |
+        |-----|---------|-------|
+        | [OnReceivePeerMessage](https://doc-zh.zego.im/article/api?doc=zim_API~cs_unity3d~class~ZIMEventHandler#on-receive-peer-message) | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#peer-message-received) | [peerMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#peer-message-received) |
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+
+        <Note title="说明">
+        以下 `FromUserId` 和 `ToUserId` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
+        </Note>
+      operationId: send-a-one-to-one-message
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=SendPeerMessage
+          schema:
+            type: string
+            enum: ["SendPeerMessage"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPeerMessageRequest'
+            example:
+              FromUserId: "u1"
+              ToUserId: ["u2", "u3"]
+              MessageType: 1
+              Priority: 1
+              MessageBody:
+                Message: "hello world"
+                ExtendedData: "s"
+                OfflinePush:
+                  Enable: 0
+                  Title: "Title"
+                  Content: "Content"
+                  Payload: "data"
+              SendMsgOptions:
+                NoUnread: true
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendPeerMessageResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "343649807833778782"
+                ErrorList:
+                  - UserId: "u3"
+                    SubCode: 1
+                SuccList:
+                  - UserId: "id4"
+                    MsgId: "6654861479614"
+                    MsgSeq: 1
+                AuditInfos:
+                  - Index: 0
+                    Reason: "reason"
+
+components:
+  schemas:
+    SendPeerMessageRequest:
+      type: object
+      required:
+        - FromUserId
+        - ToUserId
+        - MessageType
+        - Priority
+        - MessageBody
+      properties:
+        FromUserId:
+          type: string
+          description: 发送方的用户 ID。
+          example: "u1"
+        ToUserId:
+          type: array
+          description: 接收方的用户 ID 列表，最大支持 100 个用户 ID。
+          maxItems: 100
+          items:
+            type: string
+            example: "u2"
+        MessageType:
+          type: integer
+          description: 消息类型，单聊会话的适用类型请参考 MessageBody 说明。
+          example: 1
+        Priority:
+          type: integer
+          description: 消息优先级
+          enum: [1, 2, 3]
+          example: 1
+        MessageBody:
+          $ref: '../shared-components.yaml#/components/schemas/MessageBody'
+        SubMsgType:
+          type: integer
+          description: 具体的自定义类型。值由您定义，取值范围为 [0,200]。当 MessageType 为自定义消息时，才需赋值此参数。
+          minimum: 0
+          maximum: 200
+          example: 100
+        SearchedContent:
+          type: string
+          description: 自定义消息的检索字段。当 MessageType 为自定义消息时，才可填写此字段，长度上限默认为 64 字节。
+          maxLength: 64
+          example: "搜索内容"
+        SenderUnaware:
+          type: integer
+          description: 通过本服务端接口发送消息，请求参数中的 FromUserId 所对应的客户端是否能感知此次发送
+          enum: [0, 1]
+          default: 0
+          example: 0
+        SendMsgOptions:
+          $ref: '../shared-components.yaml#/components/schemas/SendMsgOptions'
+
+    SendPeerMessageResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            ErrorList:
+              type: array
+              description: 失败列表
+              items:
+                $ref: '../shared-components.yaml#/components/schemas/ErrorInfo'
+            SuccList:
+              type: array
+              description: 消息接受成功的用户列表
+              items:
+                type: object
+                properties:
+                  UserId:
+                    type: string
+                    description: 用户 ID
+                    example: "id4"
+                  MsgId:
+                    type: string
+                    description: 消息 ID，全局唯一
+                    example: "6654861479614"
+                  MsgSeq:
+                    type: integer
+                    description: 消息 Seq。当消息类型为信令消息时，此字段为空。
+                    example: 1
+            AuditInfos:
+              type: array
+              description: 审核结构数组，当数组不为空时，说明存在审核失败的消息
+              items:
+                $ref: '../shared-components.yaml#/components/schemas/AuditInfo'

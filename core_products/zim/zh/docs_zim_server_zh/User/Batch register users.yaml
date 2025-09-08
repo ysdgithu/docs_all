@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: User
+    description: 用户管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - User
+      summary: 批量注册用户
+      description: |
+        后端注册，开发者可以通过该接口批量帮用户注册 IM 账号，实现消息的接收，以便在用户登录 ZIM 后接收历史消息，常用于教育场景。
+        
+        调用频率限制：20 次/秒。
+      operationId: batch-register-users
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=UserRegister
+          schema:
+            type: string
+            enum: ["UserRegister"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRegisterUsersRequest'
+            example:
+              UserInfo:
+                - UserId: "aaa"
+                  UserName: "userNamea"
+                  UserAvatar: "http"
+                - UserId: "bbb"
+                  UserName: "userNameb"
+                  UserAvatar: "http"
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchRegisterUsersResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "343649807833778782"
+                ErrorList:
+                  - UserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    SubCode: 660000012
+                    SubMessage: "user length limit"
+
+components:
+  schemas:
+    BatchRegisterUsersRequest:
+      type: object
+      required:
+        - UserInfo
+      properties:
+        UserInfo:
+          type: array
+          description: 用户信息，单次最多注册 100 个用户。
+          maxItems: 100
+          items:
+            $ref: '../shared-components.yaml#/components/schemas/UserInfo'
+
+    BatchRegisterUsersResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            ErrorList:
+              type: array
+              description: |
+                失败信息列表。
+                - Code 为 0：
+                  - ErrorList 为空，全部用户注册成功。
+                  - ErrorList 不为空，表示部分用户注册失败，请参考 SubCode、SubMessage 处理。
+                - Code 不为 0：
+                  - ErrorList 为空，表示参数错误、接口频率限制、系统错误。
+                  - ErrorList 不为空，表示所有用户都注册失败，全部都是已经存在的用户。
+              items:
+                type: object
+                properties:
+                  UserId:
+                    type: string
+                    description: 注册失败的 UserID。
+                    example: "user123"
+                  SubCode:
+                    type: integer
+                    description: 用户注册失败的具体返回码。
+                    example: 660000012
+                  SubMessage:
+                    type: string
+                    description: 用户注册失败的原因说明。
+                    example: "user length limit"

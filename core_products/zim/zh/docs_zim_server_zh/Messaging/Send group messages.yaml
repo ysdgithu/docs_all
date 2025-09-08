@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: Messaging
+    description: 消息管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Messaging
+      summary: 发送群组消息
+      description: |
+        发送群组消息，并推送给群组内的所有在线用户。
+
+        客户端将通过以下 ZIM SDK 的回调接口，接收群组消息的通知。
+
+        | iOS-25% | Android-25% | macOS-25% | Windows-25% |
+        |-----|---------|-------|---------|
+        | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-group-message-received-info-from-group-id) | [onGroupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-group-message-received) | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-group-message-received-info-from-group-id) | [onGroupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-group-message-received) |
+
+        | Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+        |---------|---------|---------|---------|
+        | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#group-message-received) | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#group-message-received) | [onGroupMessageReceived](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onGroupMessageReceived.html) | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#group-message-received) |
+
+        | Unity3D-25% | uni-app \| uni-app x-25% | HarmonyOS-25% |
+        |---------|---------|---------|
+        | [onReceiveGroupMessage](https://doc-zh.zego.im/article/api?doc=zim_API~cs_unity3d~class~ZIMEventHandler#on-receive-group-message) | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#group-message-received) | [groupMessageReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#group-message-received) |
+
+        <Note title="调用频率限制">10 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+      operationId: send-group-messages
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=SendGroupMessage
+          schema:
+            type: string
+            enum: ["SendGroupMessage"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendGroupMessageRequest'
+            example:
+              FromUserId: "u1"
+              GroupId: "r1"
+              MessageType: 1
+              Priority: 1
+              MessageBody:
+                Message: "hello world"
+                ExtendedData: "d"
+                OfflinePush:
+                  Enable: 0
+                  Title: "Title"
+                  Content: "Content"
+                  Payload: "data"
+              SendMsgOptions:
+                NoUnread: false
+                TargetOption:
+                  ReceiverUserIds: ["user1", "user2"]
+                  Inclusive: true
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendGroupMessageResponse'
+
+components:
+  schemas:
+    SendGroupMessageRequest:
+      type: object
+      required:
+        - FromUserId
+        - GroupId
+        - MessageType
+        - Priority
+        - MessageBody
+      properties:
+        FromUserId:
+          type: string
+          description: 发送方的用户 ID。
+          example: "u1"
+        GroupId:
+          type: string
+          description: 群组 ID。
+          example: "r1"
+        MessageType:
+          type: integer
+          description: 消息类型，群组会话的适用类型请参考 MessageBody 说明。
+          example: 1
+        Priority:
+          type: integer
+          description: 消息优先级
+          enum: [1, 2, 3]
+          example: 1
+        MessageBody:
+          $ref: '../shared-components.yaml#/components/schemas/MessageBody'
+        SubMsgType:
+          type: integer
+          description: 具体的自定义类型。值由您定义，取值范围为 [0,200]。当 MessageType 为自定义消息时，才需赋值此参数。
+          minimum: 0
+          maximum: 200
+          example: 100
+        SearchedContent:
+          type: string
+          description: 自定义消息的检索字段。当 MessageType 为自定义消息时，才可填写此字段，长度上限默认为 64 字节。
+          maxLength: 64
+          example: "搜索内容"
+        SendMsgOptions:
+          type: object
+          description: 可选配置项
+          properties:
+            NoUnread:
+              type: boolean
+              description: 此消息是否会增加接收方的消息未读数。false（默认值）会增加，true 不会增加。
+              default: false
+              example: false
+            TargetOption:
+              type: object
+              description: 群定向消息的配置项
+              properties:
+                ReceiverUserIds:
+                  type: array
+                  description: 用户 ID 列表
+                  items:
+                    type: string
+                    example: "user1"
+                Inclusive:
+                  type: boolean
+                  description: |
+                    指向类型：
+                    - false：（默认）反向指向，即 ReceiverUserIds 列明的用户不会收到此消息
+                    - true：正向指向，即仅 ReceiverUserIds 列明的用户会收到此消息
+                  default: false
+                  example: true
+
+    SendGroupMessageResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            MsgId:
+              type: string
+              description: 消息 ID，全局唯一
+              example: "6654861479614"
+            MsgSeq:
+              type: integer
+              description: 消息 Seq
+              example: 1
+            AuditInfos:
+              type: array
+              description: 审核结构数组，当数组不为空时，说明存在审核失败的消息
+              items:
+                $ref: '../shared-components.yaml#/components/schemas/AuditInfo'

@@ -1,0 +1,160 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Group
+      summary: 添加群成员
+      description: |
+        通过该接口向指定的群中批量添加新成员。单次最多加入 100 人，如需调整，请联系 ZEGO 技术支持。
+
+        添加成功后，全体群成员（包括被添加的用户）通过以下 ZIM SDK 的回调接口，收到相关通知。
+
+        <Note title="调用频率限制">1 次/秒，群级别限制。如需调整，请联系 ZEGO 技术支持。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+
+        <Note title="说明">
+        以下 `FromUserId` 和 `UserIds` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
+        </Note>
+      operationId: add-group-members
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=InviteUsersIntoGroup
+          schema:
+            type: string
+            enum: ["InviteUsersIntoGroup"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddGroupMembersRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddGroupMembersResponse'
+
+components:
+  schemas:
+    AddGroupMembersRequest:
+      type: object
+      required:
+        - FromUserId
+        - GroupId
+      properties:
+        FromUserId:
+          type: string
+          description: 操作者用户 ID。用户需已注册 ZIM 服务。
+          maxLength: 32
+          example: "operator123"
+        GroupId:
+          type: string
+          description: 群 ID。
+          maxLength: 32
+          example: "group123"
+        UserIds:
+          type: array
+          description: |
+            加入群的用户 ID 列表，默认最大支持 100 个用户 ID。
+            
+            **说明：**
+            - 若数组包含与 `FromUserId` 一样的值，该值会被剔除。
+            - 此参数与 `GroupMemberInfos` 作用相同，二者选其一即可。
+            - 此参数仅在 `GroupMemberInfos` 长度为 0 时有效。
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 32
+            example: "user1"
+        GroupMemberInfos:
+          type: array
+          description: |
+            加入群的用户信息列表，默认最大支持 100 个用户信息。
+            
+            **说明：** 此参数与 `UserIds` 作用相同，二者选其一即可。
+          maxItems: 100
+          items:
+            type: object
+            required:
+              - UserId
+            properties:
+              UserId:
+                type: string
+                description: |
+                  加入群组的用户 ID。
+                  
+                  **说明：** 若此参数与 `FromUserId` 相同，则会被剔除。
+                maxLength: 32
+                example: "user1"
+              EnterGroupTime:
+                type: integer
+                format: int64
+                description: |
+                  进群时间戳（毫秒级别）。
+                  - 0 或不传：使用当前时间戳。
+                  - 其他：不可以大于当前时间。
+                example: 1640995200000
+              IsInvite:
+                type: integer
+                description: |
+                  用户的入群模式。
+                  - 0：（默认）邀请用户即可直接将对方拉入群组，无需对方同意。
+                  - 1：用户收到邀请后，需要同意才能入群。
+                enum: [0, 1]
+                default: 0
+                example: 0
+
+    AddGroupMembersResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            ErrorUsers:
+              type: array
+              description: |
+                失败列表。
+                - Code 为 0：
+                  - ErrorUsers 为空，全部指定用户邀请成功。
+                  - ErrorUsers 不为空，表示部分指定用户邀请失败，请参考 SubCode 处理。
+                - Code 不为 0：
+                  - ErrorUsers 为空，表示参数错误、接口频率限制、系统错误。
+                  - ErrorUsers 不为空，表示全部指定用户邀请失败。
+              items:
+                type: object
+                properties:
+                  UserId:
+                    type: string
+                    description: 邀请失败的用户 ID
+                    example: "user123"
+                  SubCode:
+                    type: integer
+                    description: 邀请失败返回码
+                    example: 660000012

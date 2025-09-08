@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Group
+      summary: 修改群组规格限制
+      description: |
+        通过该接口可以修改群组的入群验证模式、邀请模式、邀请目标验证模式和群成员人数上限。
+
+        修改群组规格限制成功后，群成员可通过 ZIM SDK 的回调接口接收群组规格限制修改通知。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+      operationId: modify-group-specification-limits
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=ModifyGroupSpecificationLimits
+          schema:
+            type: string
+            enum: ["ModifyGroupSpecificationLimits"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyGroupSpecificationLimitsRequest'
+            example:
+              FromUserId: "operator123"
+              GroupId: "group123"
+              JoinMode: 1
+              InviteMode: 0
+              BeInviteMode: 0
+              MaxMemberCount: 500
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "343649807833778782"
+
+components:
+  schemas:
+    ModifyGroupSpecificationLimitsRequest:
+      type: object
+      required:
+        - FromUserId
+        - GroupId
+      properties:
+        FromUserId:
+          type: string
+          description: 修改群组规格限制的操作者 ID（已注册）。
+          maxLength: 32
+          example: "operator123"
+        GroupId:
+          type: string
+          description: 待修改规格限制的群组 ID。
+          maxLength: 32
+          example: "group123"
+        JoinMode:
+          type: integer
+          description: |
+            入群验证模式：
+            - 0：不需要验证，任何人都可以加入
+            - 1：需要群主或管理员审批
+            - 2：不允许任何人加入
+          enum: [0, 1, 2]
+          example: 1
+        InviteMode:
+          type: integer
+          description: |
+            邀请模式：
+            - 0：群成员可以邀请其他人加入
+            - 1：只有群主和管理员可以邀请其他人加入
+          enum: [0, 1]
+          example: 0
+        BeInviteMode:
+          type: integer
+          description: |
+            邀请目标验证模式：
+            - 0：被邀请人同意后即可入群
+            - 1：需要群主或管理员审批
+          enum: [0, 1]
+          example: 0
+        MaxMemberCount:
+          type: integer
+          description: 群成员人数上限，取值范围 [2, 2000]。
+          minimum: 2
+          maximum: 2000
+          example: 500

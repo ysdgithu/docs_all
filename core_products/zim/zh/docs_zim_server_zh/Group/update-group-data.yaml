@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Group
+      summary: 修改群组资料
+      description: |
+        通过该接口可以实现修改群组资料信息，包括群组头像、群组名称、群组公告等。
+
+        修改群组资料成功后，群成员可通过以下 ZIM SDK 的回调接口接收群组资料修改通知。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+
+        <Note title="说明">
+        由于 `GroupAvatar`、`GroupName` 和 `GroupNotice` 支持设置为空字符。因此，如果无需修改上述某个字段，JSON 字符串中不能包含该字段名称（不能传空），否则会被认为是空字符串，原有内容会被删除。
+        </Note>
+      operationId: update-group-data
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=UpdateGroupData
+          schema:
+            type: string
+            enum: ["UpdateGroupData"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupDataRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateGroupDataResponse'
+
+components:
+  schemas:
+    UpdateGroupDataRequest:
+      type: object
+      required:
+        - FromUserId
+        - GroupId
+      properties:
+        FromUserId:
+          type: string
+          description: 修改群资料的操作者 ID（已注册）。
+          maxLength: 32
+          example: "operator123"
+        GroupId:
+          type: string
+          description: 待修改资料的群组 ID。
+          maxLength: 32
+          example: "group123"
+        GroupAvatar:
+          type: string
+          description: 群组头像地址，长度限制 500 字符。群组头像、群组名称和群组公告至少有一个。
+          maxLength: 500
+          example: "https://example.com/group_avatar.jpg"
+        GroupName:
+          type: string
+          description: 群组名称，长度限制 50 字符。群组头像、群组名称和群组公告至少有一个。
+          maxLength: 50
+          example: "新群组名称"
+        GroupNotice:
+          type: string
+          description: 群组公告，长度限制 300 字符。群组头像、群组名称和群组公告至少有一个。
+          maxLength: 300
+          example: "这是新的群组公告"
+
+    UpdateGroupDataResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'

@@ -1,0 +1,133 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: User
+    description: 用户管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - User
+      summary: 查询用户信息
+      description: |
+        支持通过用户 ID 查询用户的信息，包含用户名称、用户头像和扩展字段。
+        
+        调用频率限制：20 次/秒。
+      operationId: query-user-information
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=QueryUserInfos
+          schema:
+            type: string
+            enum: ["QueryUserInfos"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryUserInfoRequest'
+            example:
+              UserIds: ["userA", "userB", "userC"]
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryUserInfoResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "343649807833778782"
+                Result:
+                  - UserId: "UserA"
+                    UserName: "userName"
+                    UserAvatar: "avatar"
+                    Extra: "extra"
+                ErrorList:
+                  - UserId: "UserB"
+                    SubCode: 660000002
+
+components:
+  schemas:
+    QueryUserInfoRequest:
+      type: object
+      required:
+        - UserIds
+      properties:
+        UserIds:
+          type: array
+          description: 需要查询的用户 ID 列表，最大支持查询 100 个用户 ID。单个用户 ID 不超过 64 字节。
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 64
+            example: "user123"
+
+    QueryUserInfoResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            Result:
+              type: array
+              description: 查询成功结果。
+              items:
+                type: object
+                properties:
+                  UserId:
+                    type: string
+                    description: 查询成功的用户 ID。
+                    example: "UserA"
+                  UserName:
+                    type: string
+                    description: 用户名称。
+                    example: "userName"
+                  UserAvatar:
+                    type: string
+                    description: 用户头像地址。
+                    example: "avatar"
+                  Extra:
+                    type: string
+                    description: 扩展字段。
+                    example: "extra"
+            ErrorList:
+              type: array
+              description: |
+                查询失败列表。用户 ID 不存在或者用户未注册时，通过该字段返回。
+                - Code 为 0：
+                  - ErrorList 为空，全部用户信息查询成功。
+                  - ErrorList 不为空，表示部分用户信息查询失败，请参考 SubCode 处理。
+                - Code 不为 0：
+                  - ErrorList 为空，表示参数错误、接口频率限制、系统错误。
+              items:
+                type: object
+                properties:
+                  UserId:
+                    type: string
+                    description: 查询失败的用户 ID。
+                    example: "UserB"
+                  SubCode:
+                    type: integer
+                    description: 查询失败时的返回码。
+                    example: 660000002
