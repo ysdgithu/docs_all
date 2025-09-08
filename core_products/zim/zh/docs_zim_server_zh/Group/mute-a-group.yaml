@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    get:
+      tags:
+        - Group
+      summary: 设置群禁言
+      description: |
+        通过该接口可以禁言或解禁群组全员或某些群角色。
+
+接口调用成功后，群组内全体用户通过以下 ZIM SDK 的回调接口，得知哪些角色无法在该群组发言或可恢复发言：
+
+| [groupMutedInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#group-muted-info-updated) | [groupMutedInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#group-muted-info-updated) |
+
+        <Note title="调用频率限制">20  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: mute-a-group
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=MuteGroup
+          schema:
+            type: string
+            enum: ["MuteGroup"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuteAGroupResponse'
+
+components:
+  schemas:
+    MuteAGroupResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'

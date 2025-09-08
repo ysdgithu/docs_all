@@ -1,0 +1,78 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Messaging
+    description: 消息管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Messaging
+      summary: 查询消息
+      description: |
+        本接口支持查询单个指定会话（群聊、单聊）中的多条消息。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: query-messages
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=QueryMessagesByMsgSeq
+          schema:
+            type: string
+            enum: ["QueryMessagesByMsgSeq"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryMessagesRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryMessagesResponse'
+
+components:
+  schemas:
+    QueryMessagesRequest:
+      type: object
+      properties:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
+          type: string
+          description: 占位符，需要根据实际接口定义
+
+    QueryMessagesResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

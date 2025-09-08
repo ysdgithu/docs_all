@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: User
+    description: 用户管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - User
+      summary: 批量删除好友
+      description: |
+        调用此接口，可为用户批量单向或双向删除至多 20 名好友。如需上调（最多可为 50），请联系 ZEGO 技术支持。
+
+以用户 A、B 举例说明单向删除和双向删除：
+- 单向删除：当用户 A 单向删除了用户 B，用户 B 不再是用户 A 的好友、用户 A 仍为用户 B 的好友。
+- 双向删除：当用户 A 双向删除了用户 B，彼此都不再是对方的好友。
+
+
+为用户删除好友成功后，相关用户的客户端将通过以下 ZIM SDK 的回调接口接收好友列表更新的通知：
+
+| iOS-25% | Android-25% | macOS-25% | Windows-25% |
+|-----|---------|--------|---------|
+| [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-friend-list-changed-friend-info-list) | [onFriendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-friend-list-changed) | [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-friend-list-changed-friend-info-list) | [onFriendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-friend-list-changed) |
+
+| Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+|-----|---------|---------|---------|
+| [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#friend-list-changed) | [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#friend-list-changed) | [onFriendListChanged](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onFriendListChanged.html) | [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-list-changed) |
+
+| uni-app \| uni-app x-25% | HarmonyOS-25% |
+|---------|---------|
+| [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-list-changed) | [friendListChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#friend-list-changed) |
+
+        <Note title="调用频率限制">20  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: batch-delete-friends
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=DeleteFriends
+          schema:
+            type: string
+            enum: ["DeleteFriends"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchDeleteFriendsRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchDeleteFriendsResponse'
+
+components:
+  schemas:
+    BatchDeleteFriendsRequest:
+      type: object
+      properties:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
+          type: string
+          description: 占位符，需要根据实际接口定义
+
+    BatchDeleteFriendsResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

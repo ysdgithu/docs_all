@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Conversation
+    description: 会话管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Conversation
+      summary: 设置会话消息免打扰
+      description: |
+        调用过此接口，可批量设置单聊或群聊会话的消息免打扰状态。设置为免打扰后，ZIM SDK 将不会向用户推送相关会话的消息通知，同时用户的“消息未读总数”也不会增加。
+
+用户默认最多可对 500 个单聊会话设置为免打扰。如需上调，请联系 ZEGO 技术支持，最多可为 1000。
+
+群聊会话的免打扰上限是各用户加入群组的数量上限。
+
+客户端将通过 ZIM SDK 的回调接口，接收会话的消息免打扰状态变化。
+
+| iOS-25% | Android-25% | macOS-25% | Windows-25% |
+|-----|---------|-------|---------|
+| [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-group-member-info-updated-operated-info-group-id) | [onConversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-conversation-changed) | [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-group-member-info-updated-operated-info-group-id) | [onConversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-conversation-changed) |
+
+| Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+|-----|--------|---------|--------------|
+| [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#conversation-changed) | [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#conversation-changed) | [onConversationChanged](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onConversationChanged.html) | [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#conversation-changed) |
+
+| Unity3D-25% | uni-app \| uni-app x-25% | HarmonyOS-25%  |
+|---------|---------|---------|
+| [OnConversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~cs_unity3d~class~ZIMEventHandler#on-conversation-changed) | [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#conversation-changed) | [conversationChanged](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#conversation-changed) |
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: mute-notifications-for-conversations
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=SilenceConvNotification
+          schema:
+            type: string
+            enum: ["SilenceConvNotification"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MuteNotificationsForConversationsRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuteNotificationsForConversationsResponse'
+
+components:
+  schemas:
+    MuteNotificationsForConversationsRequest:
+      type: object
+      properties:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
+          type: string
+          description: 占位符，需要根据实际接口定义
+
+    MuteNotificationsForConversationsResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

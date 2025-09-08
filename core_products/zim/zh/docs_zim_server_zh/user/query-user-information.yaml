@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: User
@@ -20,8 +21,14 @@ paths:
       summary: 查询用户信息
       description: |
         支持通过用户 ID 查询用户的信息，包含用户名称、用户头像和扩展字段。
-        
-        调用频率限制：20 次/秒。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+
+        <Note title="说明">
+        UserIds 仅支持数字，英文字符和 {"'!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'}。
+        </Note>
       operationId: query-user-information
       parameters:
         - name: Action
@@ -45,32 +52,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QueryUserInfoRequest'
-            example:
-              UserIds: ["userA", "userB", "userC"]
+              $ref: '#/components/schemas/QueryUserInformationRequest'
       responses:
         '200':
           description: 成功响应
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueryUserInfoResponse'
-              example:
-                Code: 0
-                Message: "success"
-                RequestId: "343649807833778782"
-                Result:
-                  - UserId: "UserA"
-                    UserName: "userName"
-                    UserAvatar: "avatar"
-                    Extra: "extra"
-                ErrorList:
-                  - UserId: "UserB"
-                    SubCode: 660000002
+                $ref: '#/components/schemas/QueryUserInformationResponse'
 
 components:
   schemas:
-    QueryUserInfoRequest:
+    QueryUserInformationRequest:
       type: object
       required:
         - UserIds
@@ -84,33 +77,33 @@ components:
             maxLength: 64
             example: "user123"
 
-    QueryUserInfoResponse:
+    QueryUserInformationResponse:
       allOf:
         - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
         - type: object
           properties:
             Result:
               type: array
-              description: 查询成功结果。
+              description: 查询成功结果
               items:
                 type: object
                 properties:
                   UserId:
                     type: string
-                    description: 查询成功的用户 ID。
-                    example: "UserA"
+                    description: 查询成功的用户 ID
+                    example: "user123"
                   UserName:
                     type: string
-                    description: 用户名称。
-                    example: "userName"
+                    description: 用户名称
+                    example: "张三"
                   UserAvatar:
                     type: string
-                    description: 用户头像地址。
-                    example: "avatar"
+                    description: 用户头像地址
+                    example: "https://example.com/avatar.jpg"
                   Extra:
                     type: string
-                    description: 扩展字段。
-                    example: "extra"
+                    description: 扩展字段
+                    example: "{\"level\": 5}"
             ErrorList:
               type: array
               description: |
@@ -125,9 +118,13 @@ components:
                 properties:
                   UserId:
                     type: string
-                    description: 查询失败的用户 ID。
-                    example: "UserB"
+                    description: 查询失败的用户 ID
+                    example: "user456"
                   SubCode:
                     type: integer
-                    description: 查询失败时的返回码。
-                    example: 660000002
+                    description: 查询失败的具体返回码
+                    example: 660500002
+                  SubMessage:
+                    type: string
+                    description: 查询失败的原因说明
+                    example: "user not found"

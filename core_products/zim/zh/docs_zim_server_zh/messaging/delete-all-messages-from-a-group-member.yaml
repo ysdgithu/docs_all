@@ -1,0 +1,78 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Messaging
+    description: 消息管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Messaging
+      summary: 删除指定群聊用户全部消息
+      description: |
+        调用此接口，您可以在服务端删除群聊会话中某一用户的全部消息。
+
+        <Note title="调用频率限制">20  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: delete-all-messages-from-a-group-member
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=ClearMemberGroupMessage
+          schema:
+            type: string
+            enum: ["ClearMemberGroupMessage"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAllMessagesFromAGroupMemberRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAllMessagesFromAGroupMemberResponse'
+
+components:
+  schemas:
+    DeleteAllMessagesFromAGroupMemberRequest:
+      type: object
+      properties:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
+          type: string
+          description: 占位符，需要根据实际接口定义
+
+    DeleteAllMessagesFromAGroupMemberResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

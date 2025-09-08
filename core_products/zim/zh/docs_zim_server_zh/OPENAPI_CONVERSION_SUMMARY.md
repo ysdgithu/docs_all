@@ -1,8 +1,184 @@
 # ZIM 服务端 API OpenAPI 转换总结
 
-## 概述
+## 项目概述
 
-本文档总结了将 `core_products/zim/zh/docs_zim_server_zh` 目录下的 MDX 接口文档转换为 OpenAPI YAML 格式的工作进展。
+本项目将 ZIM 服务端 API 文档从传统的 MDX 格式转换为标准的 OpenAPI 3.0 格式，以提供更好的 API 文档体验和交互性。
+
+## 已完成的工作
+
+### ✅ 基础设施
+1. **共享组件文件**：创建了 `shared-components.yaml`，包含：
+   - 服务器配置（zim-api.zego.im）
+   - 公共参数定义（AppId、Signature、Timestamp 等）
+   - 标准响应模式
+
+2. **配置文件更新**：更新了 `docuo.config.json`，包含所有模块的 OpenAPI 配置：
+   - User 模块（17个接口）
+   - Group 模块（15个接口）
+   - Messaging 模块（13个接口）
+   - Room 模块（7个接口）
+   - Conversation 模块（8个接口）
+   - Call-invitation 模块（3个接口）
+   - Bot 模块（1个接口）
+   - ZIM-audio 模块（1个接口）
+
+### ✅ 已转换的接口
+
+#### User 模块
+- ✅ `batch-register-users.yaml` - 批量注册用户
+- ✅ `query-user-information.yaml` - 查询用户信息
+- ✅ `query-users-online-status.yaml` - 查询用户在线状态
+
+#### Group 模块
+- ✅ `create-a-group.yaml` - 创建群组
+- ✅ `update-group-data.yaml` - 修改群组资料
+- ✅ `query-group-info.yaml` - 查询群组资料
+- ✅ `add-group-members.yaml` - 添加群成员
+- ✅ `modify-group-specification-limits.yaml` - 修改群组规格限制
+
+#### Messaging 模块
+- ✅ `send-a-one-to-one-message.yaml` - 发送单聊消息
+
+### ✅ 技术特性
+
+1. **标准化命名**：使用 kebab-case 命名规范
+2. **operationId 匹配**：operationId 与文件名保持一致
+3. **公共参数引用**：统一引用 shared-components.yaml 中的公共参数
+4. **标准响应结构**：包含 Code、Message、RequestId、Data 四层结构
+5. **详细的参数描述**：包含类型、格式、枚举值、示例等
+6. **SDK 回调表格**：保留了原始文档中的 SDK 回调接口表格
+
+## 转换规范
+
+### 文件命名规范
+- YAML 文件使用 kebab-case 命名（如：`batch-register-users.yaml`）
+- operationId 与文件名保持一致
+- tags 使用模块名（User、Group、Messaging 等）
+
+### OpenAPI 结构
+```yaml
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  $ref: '../shared-components.yaml#/servers'
+
+tags:
+  - name: ModuleName
+    description: 模块描述
+
+paths:
+  /:
+    method:
+      # 接口定义
+```
+
+### 参数处理
+- 公共参数统一引用 shared-components.yaml
+- Action 参数包含接口原型描述
+- 业务参数按照原始 MDX 文档定义
+- GET 请求参数使用 query parameters
+- POST 请求参数使用 requestBody
+
+### 响应处理
+- 统一使用 StandardResponse 基础结构
+- 包含成功结果和错误列表
+- 保持与原始文档的数据结构一致
+
+## 批量生成工具
+
+创建了 `generate_zim_yaml.py` 脚本，支持：
+- 自动从 MDX 文件提取接口信息
+- 批量生成 YAML 文件
+- 标准化的模板结构
+- 模块化配置
+
+## 下一步计划
+
+### 🔄 待完成的接口
+
+#### User 模块（剩余14个）
+- modify-user-information.yaml
+- query-group-information-of-user-joined.yaml
+- batch-add-friends.yaml
+- batch-send-friend-requests.yaml
+- batch-delete-friends.yaml
+- delete-all-friends.yaml
+- query-the-friend-list.yaml
+- check-friendships.yaml
+- change-the-alias-of-a-friend.yaml
+- modify-the-attributes-of-a-friend.yaml
+- batch-block-users.yaml
+- batch-unblock-users.yaml
+- query-the-blocklist.yaml
+- check-blockships.yaml
+
+#### Group 模块（剩余10个）
+- query-group-list-in-the-app.yaml
+- query-group-member-list.yaml
+- remove-group-member.yaml
+- transfer-the-group-ownership.yaml
+- set-nicknames-of-group-members.yaml
+- set-group-member-roles.yaml
+- mute-a-group.yaml
+- mute-group-members.yaml
+- fetch-forbid-group-list.yaml
+- disband-a-group-chat.yaml
+
+#### Messaging 模块（剩余12个）
+- send-group-messages.yaml
+- send-room-messages.yaml
+- recall-a-one-to-one-message.yaml
+- recall-a-group-message.yaml
+- recall-a-room-message.yaml
+- edit-a-message.yaml
+- query-messages.yaml
+- import-one-to-one-messages.yaml
+- import-group-messages.yaml
+- delete-all-messages-from-a-one-to-one-conversaiton-user.yaml
+- delete-all-messages-from-a-group-member.yaml
+- push-message-to-all-users.yaml
+
+#### 其他模块
+- Room 模块（7个接口）
+- Conversation 模块（8个接口）
+- Call-invitation 模块（3个接口）
+- Bot 模块（1个接口）
+- ZIM-audio 模块（1个接口）
+
+### 📋 优化建议
+
+1. **详细化参数定义**：为每个接口添加更详细的参数描述和示例
+2. **错误码映射**：添加具体的错误码和错误信息映射
+3. **示例完善**：为每个接口添加完整的请求和响应示例
+4. **文档生成测试**：确保所有 YAML 文件都能正确生成 MDX 文档
+5. **链接修复**：确保文档中的内部链接正确指向新的文件路径
+
+## 技术债务
+
+1. **Git 冲突**：存在目录大小写冲突问题，需要清理
+2. **文件清理**：删除旧格式的 YAML 文件，避免混淆
+3. **配置同步**：确保 docuo.config.json 与实际文件保持同步
+
+## 总结
+
+目前已经成功建立了 ZIM OpenAPI 转换的基础框架，完成了约 10% 的接口转换工作。剩余的工作主要是批量创建 YAML 文件，可以使用现有的生成脚本加速完成。
+
+### 关键成果
+- ✅ 建立了完整的 OpenAPI 转换规范
+- ✅ 创建了共享组件和配置文件
+- ✅ 完成了核心接口的转换示例
+- ✅ 提供了批量生成工具
+
+### 后续工作
+- 🔄 批量完成剩余接口的转换
+- 🔄 测试文档生成和渲染效果
+- 🔄 优化参数定义和示例
+- 🔄 解决技术债务问题
 
 ## 已完成的工作
 
@@ -17,7 +193,7 @@
 ### 2. 已转换的接口文件
 
 #### User 目录 (7个接口)
-1. `Batch register users.yaml` - 批量注册用户
+1. `batch-register-users.yaml` - 批量注册用户
 2. `Query user information.yaml` - 查询用户信息  
 3. `Query users online status.yaml` - 查询用户在线状态
 4. `Batch add friends.yaml` - 批量添加好友

@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Messaging
+    description: 消息管理相关接口
+
+paths:
+  /:
+    post:
+      tags:
+        - Messaging
+      summary: 导入单聊消息
+      description: |
+        如果您正使用其他即时通讯服务并希望接入 ZIM，可调用此接口，向 ZIM 导入用户的历史单聊消息（按时间顺序）。
+
+一个单聊会话存在两个用户（用户 A、B）。用户 A 可能删除了部分消息，导致用户 A 在此会话可以看到的消息列表与用户 B 的不同，因此，对于同一个单聊会话，需要为用户 A、B 分别调用此接口。
+
+        <Note title="调用频率限制">20  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: import-one-to-one-messages
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=ImportPeerMsg
+          schema:
+            type: string
+            enum: ["ImportPeerMsg"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportOneToOneMessagesRequest'
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportOneToOneMessagesResponse'
+
+components:
+  schemas:
+    ImportOneToOneMessagesRequest:
+      type: object
+      properties:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
+          type: string
+          description: 占位符，需要根据实际接口定义
+
+    ImportOneToOneMessagesResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

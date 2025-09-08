@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    get:
+      tags:
+        - Group
+      summary: 查询 App 下的群组列表
+      description: |
+        获取 App 中所有群组的 ID。
+
+<Warning title="注意">
+获取的数据可能会存在最多 **1 分钟** 的延迟。
+</Warning>
+
+        <Note title="调用频率限制">1  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: query-group-list-in-the-app
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=QueryAppGroupList
+          schema:
+            type: string
+            enum: ["QueryAppGroupList"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryGroupListInTheAppResponse'
+
+components:
+  schemas:
+    QueryGroupListInTheAppResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'

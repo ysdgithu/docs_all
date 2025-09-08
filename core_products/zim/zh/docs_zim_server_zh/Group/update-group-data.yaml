@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: Group

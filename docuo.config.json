@@ -277,43 +277,27 @@
     "zim": [
       {
         "specPaths": [
-          "core_products/zim/zh/docs_zim_server_zh/User/Batch register users.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Query user information.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Query users online status.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Batch add friends.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Delete all friends.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Query the friend list.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/User/Modify user information.yaml"
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-register-users.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-user-information.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-users-online-status.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-add-friends.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-the-friend-list.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/modify-user-information.yaml"
         ],
-        "outputDir": "core_products/zim/zh/docs_zim_server_zh/User"
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/user"
       },
       {
         "specPaths": [
-          "core_products/zim/zh/docs_zim_server_zh/Messaging/Send a one-to-one message.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Messaging/Send group messages.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Messaging/Recall a one-to-one message.yaml"
+          "core_products/zim/zh/docs_zim_server_zh/messaging/send-a-one-to-one-message.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/send-group-messages.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/recall-a-one-to-one-message.yaml"
         ],
-        "outputDir": "core_products/zim/zh/docs_zim_server_zh/Messaging"
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/messaging"
       },
       {
         "specPaths": [
-          "core_products/zim/zh/docs_zim_server_zh/Group/create-a-group.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/add-group-members.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/update-group-data.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/query-group-info.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/modify-group-specification-limits.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/query-group-list-in-the-app.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/query-group-member-list.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/remove-group-member.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/transfer-the-group-ownership.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/set-nicknames-of-group-members.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/set-group-member-roles.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/mute-a-group.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/mute-group-members.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/fetch-forbid-group-list.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/Group/disband-a-group-chat.yaml"
         ],
-        "outputDir": "core_products/zim/zh/docs_zim_server_zh/Group"
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/group"
       }
     ]
   },

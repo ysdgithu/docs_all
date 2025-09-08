@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: open-api-desc
+  version: 1.0.0
+  contact:
+    email: support@zegocloud.com
+
+servers:
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
+
+tags:
+  - name: Group
+    description: 群组管理相关接口
+
+paths:
+  /:
+    get:
+      tags:
+        - Group
+      summary: 设置群成员角色
+      description: |
+        调用此接口，可以为群成员设置在群内的角色。
+
+ZIM SDK 默认支持将用户设置为群主、管理员、普通成员。在群组中，群主拥有所有**客户端**权限，可以实现所有群组功能。管理员拥有大部分**客户端**权限。普通成员拥有的**客户端**权限最少，具体如下表所示：
+
+<table>
+<tbody><tr>
+<th>客户端权限</th>
+<th>群主（对应枚举值为 1）</th>
+<th>管理员（对应枚举值为 2）</th>
+<th>普通成员（对应枚举值为 3）</th>
+</tr>
+<tr>
+<th>修改群头像、群名称、群公告</th>
+<td rowspan="2">支持</td>
+<td rowspan="2">支持</td>
+<td rowspan="2">支持</td>
+</tr>
+<tr>
+<th>修改群属性</th>
+</tr>
+<tr>
+<th>修改群成员昵称</th>
+<td rowspan="9">支持，可对所有群角色用户使用此功能</td>
+<td rowspan="5">支持，可对所有普通成员使用此功能</td>
+<td rowspan="2">支持，仅可对自己使用此功能</td>
+</tr>
+<tr>
+<th>撤回群成员消息</th>
+</tr>
+<tr>
+<th>踢人</th>
+<td rowspan="7">不支持。</td>
+</tr>
+<tr>
+<th>对单独群成员禁言</th>
+</tr>
+<tr>
+<th>对特定群角色禁言</th>
+</tr>
+<tr>
+<th>设置群成员角色</th>
+<td rowspan="4">不支持</td>
+</tr>
+<tr>
+<th>转让群主</th>
+</tr>
+<tr>
+<th>解散群组</th>
+</tr>
+<tr>
+<th>全员禁言</th>
+</tr>
+</tbody></table>
+
+除此之外，还可以自定义群角色，但该角色拥有的客户端权限与**普通成员**一致。
+
+设置成功后，群内成员通过以下 ZIM 回调收到通知：
+
+| [groupMemberInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#group-member-info-updated) | [groupMemberInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#group-member-info-updated) | |
+
+        <Note title="调用频率限制">20  次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+      operationId: set-group-member-roles
+      parameters:
+        - name: Action
+          in: query
+          required: true
+          description: |
+            > 接口原型参数
+            >
+            > https://zim-api.zego.im?Action=SetGroupMemberRole
+          schema:
+            type: string
+            enum: ["SetGroupMemberRole"]
+        - $ref: '../shared-components.yaml#/components/parameters/AppId'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureNonce'
+        - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
+        - $ref: '../shared-components.yaml#/components/parameters/Signature'
+        - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
+        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+
+      responses:
+        '200':
+          description: 成功响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetGroupMemberRolesResponse'
+
+components:
+  schemas:
+    SetGroupMemberRolesResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'

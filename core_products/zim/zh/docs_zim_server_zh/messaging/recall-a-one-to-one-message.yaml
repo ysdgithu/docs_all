@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: Messaging
@@ -35,13 +36,9 @@ paths:
         |---------|---------|---------|
         | [OnMessageRevokeReceived](https://doc-zh.zego.im/article/api?doc=zim_API~cs_unity3d~class~ZIMEventHandler#on-message-revoke-received) | [messageRevokeReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#message-revoke-received) | [messageRevokeReceived](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#message-revoke-received) |
 
-        <Note title="调用频率限制">20 次/秒。</Note>
+        <Note title="调用频率限制">20  次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
-
-        <Note title="说明">
-        以下 `FromUserId` 和 `ToUserId` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
-        </Note>
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
       operationId: recall-a-one-to-one-message
       parameters:
         - name: Action
@@ -65,58 +62,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RevokePeerMessageRequest'
-            example:
-              FromUserId: "u1"
-              ToUserId: "u2"
-              MsgSeq: 123456
-              Payload: "撤回原因"
-              OfflinePush:
-                Enable: 1
-                Title: "消息撤回"
-                Content: "有一条消息被撤回"
-                Payload: "revoke_data"
+              $ref: '#/components/schemas/RecallAOneToOneMessageRequest'
       responses:
         '200':
           description: 成功响应
           content:
             application/json:
               schema:
-                $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
-              example:
-                Code: 0
-                Message: "success"
-                RequestId: "343649807833778782"
+                $ref: '#/components/schemas/RecallAOneToOneMessageResponse'
 
 components:
   schemas:
-    RevokePeerMessageRequest:
+    RecallAOneToOneMessageRequest:
       type: object
-      required:
-        - FromUserId
-        - ToUserId
-        - MsgSeq
       properties:
-        FromUserId:
+        # TODO: 根据具体接口定义请求参数
+        placeholder:
           type: string
-          description: 消息发送者的用户 ID。
-          example: "u1"
-        ToUserId:
-          type: string
-          description: 消息接收方的用户 ID。
-          example: "u2"
-        MsgSeq:
-          type: integer
-          format: int64
-          description: |
-            消息 seq。获取方式：
-            - 若需要撤回由客户端发出的单聊消息，通过消息发送后回调获取 MsgSeq
-            - 若需要撤回由服务端 API SendPeerMessage 发出的单聊消息，通过接口响应数据获取 MsgSeq
-          example: 123456
-        Payload:
-          type: string
-          description: 撤回操作附加的信息，最大 200 字节。
-          maxLength: 200
-          example: "撤回原因"
-        OfflinePush:
-          $ref: '../shared-components.yaml#/components/schemas/OfflinePush'
+          description: 占位符，需要根据实际接口定义
+
+    RecallAOneToOneMessageResponse:
+      allOf:
+        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
+        - type: object
+          properties:
+            # TODO: 根据具体接口定义响应数据
+            Data:
+              type: object
+              description: 响应数据，需要根据实际接口定义

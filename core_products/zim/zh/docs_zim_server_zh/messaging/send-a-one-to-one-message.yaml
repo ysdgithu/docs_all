@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: Messaging
@@ -17,11 +18,15 @@ paths:
     post:
       tags:
         - Messaging
-      summary: 发送单聊消息
+      summary: SendPeerMessage
       description: |
         发送 1v1 单聊消息，支持向单个用户、或批量向多个用户发送消息。
 
         目标客户端将通过以下 ZIM SDK 的回调接口，接收单聊消息的通知。
+
+        <Note title="说明">
+        开通内容审核功能后，默认情况下服务端发送的消息会进行审核。如果服务端发送的消息不需要审核，请联系 ZEGO 技术支持进行配置。
+        </Note>
 
         | iOS-25% | Android-25% | macOS-25% | Windows-25% |
         |-----|---------|-------|---------|
@@ -37,10 +42,10 @@ paths:
 
         <Note title="调用频率限制">20 次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
 
         <Note title="说明">
-        以下 `FromUserId` 和 `ToUserId` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
+        以下 `FromUserId` 和 `ToUserIds` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../user/batch-register-users.mdx) 注册相关的 userID。
         </Note>
       operationId: send-a-one-to-one-message
       parameters:
@@ -65,127 +70,107 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SendPeerMessageRequest'
-            example:
-              FromUserId: "u1"
-              ToUserId: ["u2", "u3"]
-              MessageType: 1
-              Priority: 1
-              MessageBody:
-                Message: "hello world"
-                ExtendedData: "s"
-                OfflinePush:
-                  Enable: 0
-                  Title: "Title"
-                  Content: "Content"
-                  Payload: "data"
-              SendMsgOptions:
-                NoUnread: true
+              $ref: '#/components/schemas/SendOneToOneMessageRequest'
       responses:
         '200':
           description: 成功响应
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SendPeerMessageResponse'
-              example:
-                Code: 0
-                Message: "success"
-                RequestId: "343649807833778782"
-                ErrorList:
-                  - UserId: "u3"
-                    SubCode: 1
-                SuccList:
-                  - UserId: "id4"
-                    MsgId: "6654861479614"
-                    MsgSeq: 1
-                AuditInfos:
-                  - Index: 0
-                    Reason: "reason"
+                $ref: '#/components/schemas/SendOneToOneMessageResponse'
 
 components:
   schemas:
-    SendPeerMessageRequest:
+    SendOneToOneMessageRequest:
       type: object
       required:
         - FromUserId
-        - ToUserId
+        - ToUserIds
         - MessageType
-        - Priority
         - MessageBody
       properties:
         FromUserId:
           type: string
-          description: 发送方的用户 ID。
-          example: "u1"
-        ToUserId:
+          description: 发送者的用户 ID（已注册）。
+          maxLength: 32
+          example: "sender123"
+        ToUserIds:
           type: array
-          description: 接收方的用户 ID 列表，最大支持 100 个用户 ID。
+          description: 接收者的用户 ID 列表，单次最多支持 100 个用户。
           maxItems: 100
           items:
             type: string
-            example: "u2"
+            maxLength: 32
+            example: "receiver123"
         MessageType:
           type: integer
-          description: 消息类型，单聊会话的适用类型请参考 MessageBody 说明。
-          example: 1
-        Priority:
-          type: integer
-          description: 消息优先级
-          enum: [1, 2, 3]
+          description: |
+            消息类型：
+            - 1：文本消息
+            - 2：图片消息
+            - 3：文件消息
+            - 4：音频消息
+            - 5：视频消息
+            - 11：自定义消息
+            - 20：系统消息
+          enum: [1, 2, 3, 4, 5, 11, 20]
           example: 1
         MessageBody:
-          $ref: '../shared-components.yaml#/components/schemas/MessageBody'
-        SubMsgType:
-          type: integer
-          description: 具体的自定义类型。值由您定义，取值范围为 [0,200]。当 MessageType 为自定义消息时，才需赋值此参数。
-          minimum: 0
-          maximum: 200
-          example: 100
-        SearchedContent:
           type: string
-          description: 自定义消息的检索字段。当 MessageType 为自定义消息时，才可填写此字段，长度上限默认为 64 字节。
-          maxLength: 64
-          example: "搜索内容"
-        SenderUnaware:
+          description: 消息内容，详情请参考 [MessageBody 介绍](./messagebody-introduction.mdx)。
+          maxLength: 32768
+          example: "Hello, this is a test message"
+        MessageSeq:
           type: integer
-          description: 通过本服务端接口发送消息，请求参数中的 FromUserId 所对应的客户端是否能感知此次发送
-          enum: [0, 1]
-          default: 0
-          example: 0
-        SendMsgOptions:
-          $ref: '../shared-components.yaml#/components/schemas/SendMsgOptions'
+          format: int64
+          description: 消息序号，用于消息去重。如果不传，系统会自动生成。
+          example: 1234567890
+        SendTime:
+          type: integer
+          format: int64
+          description: 消息发送时间，Unix 时间戳，单位为毫秒。如果不传，系统会使用当前时间。
+          example: 1640995200000
 
-    SendPeerMessageResponse:
+    SendOneToOneMessageResponse:
       allOf:
         - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
         - type: object
           properties:
-            ErrorList:
+            Result:
               type: array
-              description: 失败列表
-              items:
-                $ref: '../shared-components.yaml#/components/schemas/ErrorInfo'
-            SuccList:
-              type: array
-              description: 消息接受成功的用户列表
+              description: 发送成功结果
               items:
                 type: object
                 properties:
-                  UserId:
+                  ToUserId:
                     type: string
-                    description: 用户 ID
-                    example: "id4"
-                  MsgId:
-                    type: string
-                    description: 消息 ID，全局唯一
-                    example: "6654861479614"
-                  MsgSeq:
+                    description: 接收者用户 ID
+                    example: "receiver123"
+                  MessageSeq:
                     type: integer
-                    description: 消息 Seq。当消息类型为信令消息时，此字段为空。
-                    example: 1
-            AuditInfos:
+                    format: int64
+                    description: 消息序号
+                    example: 1234567890
+                  SendTime:
+                    type: integer
+                    format: int64
+                    description: 消息发送时间，Unix 时间戳，单位为毫秒
+                    example: 1640995200000
+            ErrorList:
               type: array
-              description: 审核结构数组，当数组不为空时，说明存在审核失败的消息
+              description: 发送失败列表
               items:
-                $ref: '../shared-components.yaml#/components/schemas/AuditInfo'
+                type: object
+                properties:
+                  ToUserId:
+                    type: string
+                    description: 发送失败的接收者用户 ID
+                    example: "receiver456"
+                  SubCode:
+                    type: integer
+                    description: 发送失败的具体返回码
+                    example: 660500002
+                  SubMessage:
+                    type: string
+                    description: 发送失败的原因说明
+                    example: "user not found"

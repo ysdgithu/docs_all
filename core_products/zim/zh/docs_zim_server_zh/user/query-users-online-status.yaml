@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: User
@@ -20,8 +21,11 @@ paths:
       summary: 查询用户在线状态
       description: |
         查询用户的在线状态，支持查询单个用户、或批量查询多个用户的在线状态。
-        
-        调用频率限制：20 次/秒。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+
       operationId: query-users-online-status
       parameters:
         - name: Action
@@ -51,6 +55,7 @@ paths:
             maxItems: 100
             items:
               type: string
+              maxLength: 64
               example: "user123"
       responses:
         '200':
@@ -58,60 +63,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueryUserOnlineStatusResponse'
-              example:
-                Code: 0
-                Message: "success"
-                RequestId: "343649807833778782"
-                Result:
-                  - UserId: "id1"
-                    Status: "Offline"
-                  - UserId: "id2"
-                    Status: "Online"
-                ErrorList:
-                  - UserId: "id4"
-                    SubCode: 660200001
+                $ref: '#/components/schemas/QueryUsersOnlineStatusResponse'
 
 components:
   schemas:
-    QueryUserOnlineStatusResponse:
+    QueryUsersOnlineStatusResponse:
       allOf:
         - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
         - type: object
           properties:
             Result:
               type: array
-              description: 查询的用户状态结果。用户处于在线状态或离线状态时，通过该字段返回。
+              description: 查询成功结果
               items:
                 type: object
                 properties:
                   UserId:
                     type: string
-                    description: 在线或离线用户的 ID。
-                    example: "id1"
-                  Status:
-                    type: string
-                    description: 用户状态
-                    enum: ["Online", "Offline"]
-                    example: "Offline"
+                    description: 用户 ID
+                    example: "user123"
+                  OnlineState:
+                    type: integer
+                    description: |
+                      在线状态：
+                      - 0：离线
+                      - 1：在线
+                    enum: [0, 1]
+                    example: 1
             ErrorList:
               type: array
-              description: |
-                查询失败列表。用户 ID 不存在或者用户已登出时，通过该字段返回。
-                - Code 为 0：
-                  - ErrorList 为空，全部用户在线状态查询成功。
-                  - ErrorList 不为空，表示部分用户在线状态查询失败，请参考 SubCode 处理。
-                - Code 不为 0：
-                  - ErrorList 为空，表示参数错误、接口频率限制、系统错误。
-                  - ErrorList 不为空，表示所有用户在线状态查询失败。
+              description: 查询失败列表
               items:
                 type: object
                 properties:
                   UserId:
                     type: string
-                    description: 不存在的用户 ID 或已登出用户的 ID。
-                    example: "id4"
+                    description: 查询失败的用户 ID
+                    example: "user456"
                   SubCode:
                     type: integer
-                    description: 查询失败时的返回码。
-                    example: 660200001
+                    description: 查询失败的具体返回码
+                    example: 660500002
+                  SubMessage:
+                    type: string
+                    description: 查询失败的原因说明
+                    example: "user not found"

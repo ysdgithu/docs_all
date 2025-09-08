@@ -6,7 +6,8 @@ info:
     email: support@zegocloud.com
 
 servers:
-  $ref: '../shared-components.yaml#/servers'
+  - url: https://zim-api.zego.im
+    description: ZIM 服务端 API 地址
 
 tags:
   - name: User
@@ -20,8 +21,14 @@ paths:
       summary: 批量注册用户
       description: |
         后端注册，开发者可以通过该接口批量帮用户注册 IM 账号，实现消息的接收，以便在用户登录 ZIM 后接收历史消息，常用于教育场景。
-        
-        调用频率限制：20 次/秒。
+
+        <Note title="调用频率限制">20 次/秒。</Note>
+
+        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
+
+        <Note title="说明">
+        UserID 仅支持数字，英文字符和 {"'!', '#', '$', '%', '&', '(', ')', '+', '-', ':', ';', '<', '=', '.', '>', '?', '@', '[', ']', '^', '_', '{', '}', '|', '~'}。
+        </Note>
       operationId: batch-register-users
       parameters:
         - name: Action
@@ -46,14 +53,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BatchRegisterUsersRequest'
-            example:
-              UserInfo:
-                - UserId: "aaa"
-                  UserName: "userNamea"
-                  UserAvatar: "http"
-                - UserId: "bbb"
-                  UserName: "userNameb"
-                  UserAvatar: "http"
       responses:
         '200':
           description: 成功响应
@@ -61,14 +60,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BatchRegisterUsersResponse'
-              example:
-                Code: 0
-                Message: "success"
-                RequestId: "343649807833778782"
-                ErrorList:
-                  - UserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                    SubCode: 660000012
-                    SubMessage: "user length limit"
 
 components:
   schemas:
@@ -82,7 +73,25 @@ components:
           description: 用户信息，单次最多注册 100 个用户。
           maxItems: 100
           items:
-            $ref: '../shared-components.yaml#/components/schemas/UserInfo'
+            type: object
+            required:
+              - UserId
+            properties:
+              UserId:
+                type: string
+                description: 用户 ID，长度不超过 32 字节。
+                maxLength: 32
+                example: "user123"
+              UserName:
+                type: string
+                description: 用户名称，长度不超过 256 字节。
+                maxLength: 256
+                example: "张三"
+              UserAvatar:
+                type: string
+                description: 用户头像地址，长度不超过 500 字节。
+                maxLength: 500
+                example: "https://example.com/avatar.jpg"
 
     BatchRegisterUsersResponse:
       allOf:
@@ -102,15 +111,15 @@ components:
               items:
                 type: object
                 properties:
-                  UserId:
+                  UserID:
                     type: string
-                    description: 注册失败的 UserID。
+                    description: 注册失败的 UserID
                     example: "user123"
                   SubCode:
                     type: integer
-                    description: 用户注册失败的具体返回码。
-                    example: 660000012
+                    description: 用户注册失败的具体返回码
+                    example: 660000001
                   SubMessage:
                     type: string
-                    description: 用户注册失败的原因说明。
-                    example: "user length limit"
+                    description: 用户注册失败的原因说明
+                    example: "user already exists"
