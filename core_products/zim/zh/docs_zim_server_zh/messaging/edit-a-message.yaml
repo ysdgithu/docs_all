@@ -22,30 +22,28 @@ paths:
       description: |
         ZIM 服务端支持开发者编辑已发送的单聊或群聊消息。
 
-编辑消息成功后，会触发 [消息发送后回调](./../callbacks/message-sent.mdx)。同时消息接收用户可以通过以下 ZIM SDK 回调接口，接收消息已编辑通知。
+        编辑消息成功后，会触发 [消息发送后回调](./../callbacks/message-sent.mdx)。同时消息接收用户可以通过以下 ZIM SDK 回调接口，接收消息已编辑通知。
+        
+        | iOS-25% | Android-25% | macOS-25% | Windows-25% |
+        |-----|---------|-------|---------|
+        | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-message-edited) | [onMessageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-message-edited) | [onMessageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-message-edited) |
+        
+        | Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+        |---------|-----|--------|--------------|
+        | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#message-edited) | [onMessageEdited](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onMessageEdited.html) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#message-edited) |
+        
+        | uni-app \| uni-app x-25% | HarmonyOS-25% |  
+        |---------|---------|
+        |[messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#message-edited) | 
 
-| iOS-25% | Android-25% | macOS-25% | Windows-25% |
-|-----|---------|-------|---------|
-| [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-message-edited) | [onMessageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-message-edited) | [onMessageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-message-edited) |
-
-| Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
-|---------|-----|--------|--------------|
-| [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#message-edited) | [onMessageEdited](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onMessageEdited.html) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_react-native~interface~ZIMEventHandler#message-edited) |
-
-| uni-app \| uni-app x-25% | HarmonyOS-25% |  
-|---------|---------|
-|[messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#message-edited) | [messageEdited](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#message-edited) | 
-
-
-<Note title="说明">
-
-- 单次调用仅可每次修改一个会话的一条消息。
-- 默认仅支持 24 小时内发送的消息，如需编辑更早的历史消息，请联系 ZEGO 技术支持配置。
-</Note>
+        <Note title="说明">
+        
+        - 单次调用仅可每次修改一个会话的一条消息。
+        - 默认仅支持 24 小时内发送的消息，如需编辑更早的历史消息，请联系 ZEGO 技术支持配置。
+        </Note>
 
         <Note title="调用频率限制">20  次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
       operationId: edit-a-message
       parameters:
         - name: Action
@@ -63,7 +61,7 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+        
       requestBody:
         required: true
         content:

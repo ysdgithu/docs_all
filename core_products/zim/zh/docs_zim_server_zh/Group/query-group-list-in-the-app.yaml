@@ -22,13 +22,12 @@ paths:
       description: |
         获取 App 中所有群组的 ID。
 
-<Warning title="注意">
-获取的数据可能会存在最多 **1 分钟** 的延迟。
-</Warning>
+        <Warning title="注意">
+        获取的数据可能会存在最多 **1 分钟** 的延迟。
+        </Warning>
 
         <Note title="调用频率限制">1  次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
       operationId: query-group-list-in-the-app
       parameters:
         - name: Action
@@ -46,7 +45,6 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
 
       responses:
         '200':

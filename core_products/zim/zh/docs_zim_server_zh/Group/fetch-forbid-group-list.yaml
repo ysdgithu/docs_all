@@ -22,11 +22,10 @@ paths:
       description: |
         本接口用于查询 App 中的所有禁言群组的 ID，包含处于全员禁言、按群组角色禁言或按用户 ID 禁言状态的群组。
 
-本接口每次默认返回 10000 个群组，如需调整，请联系 ZEGO 技术支持。
+        本接口每次默认返回 10000 个群组，如需调整，请联系 ZEGO 技术支持。
 
         <Note title="调用频率限制">20  次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
       operationId: fetch-forbid-group-list
       parameters:
         - name: Action
@@ -44,7 +43,7 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+        
       requestBody:
         required: true
         content:

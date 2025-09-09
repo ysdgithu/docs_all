@@ -26,8 +26,6 @@ paths:
 
         <Note title="调用频率限制">20 次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
-
         <Note title="说明">
         由于 `GroupAvatar`、`GroupName` 和 `GroupNotice` 支持设置为空字符。因此，如果无需修改上述某个字段，JSON 字符串中不能包含该字段名称（不能传空），否则会被认为是空字符串，原有内容会被删除。
         </Note>
@@ -48,7 +46,7 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+        
       requestBody:
         required: true
         content:

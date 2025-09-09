@@ -26,8 +26,6 @@ paths:
 
         <Note title="调用频率限制">1 次/秒，群级别限制。如需调整，请联系 ZEGO 技术支持。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../Accessing%20Server%20APIs.mdx#2-公共参数)。
-
         <Note title="说明">
         以下 `FromUserId` 和 `UserIds` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
         </Note>
@@ -48,7 +46,7 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+        
       requestBody:
         required: true
         content:

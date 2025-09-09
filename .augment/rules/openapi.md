@@ -111,5 +111,104 @@ type: "manual"---
         以下 `FromUserId` 和 `ToUserId` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../User/Batch%20register%20users.mdx) 注册相关的 userID。
         </Note>
 
+## 参数描述与示例
+参考对应mdx文件，每个参数（包括请求参数，响应参数）都有参数描述，例如：
+参考对应mdx文件，每个参数（包括请求参数，响应参数）都有示例，例如：
+RegisterBotsRequest:
+      type: object
+      required: [UserInfo]
+      properties:
+        UserInfo:
+          type: array
+          description: 机器人用户信息列表。单次最多注册 20 个机器人。
+          items:
+            type: object
+            required: [UserId]
+            properties:
+              UserId:
+                type: string
+                description: 机器人用户 ID。长度不超过 32 字节，必须以 @RBT#开头。
+                example: "@RBT#R1"
+              UserName:
+                type: string
+                description: 机器人名称。长度不超过 256 字节。
+                example: "userNameA"
+              UserAvatar:
+                type: string
+                description: 机器人头像地址。长度不超过 500 字节。
+                example: "https"
+
+## 返回码
+参考对应mdx文件，code参数描述里应该有返回码，需要转换成html格式填入，例如：
+RegisterBotsResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          format: int32
+          description: |
+            返回码。
+            
+            > **注意**
+            >
+            > 当您发起请求同时注册多个机器人时：
+            >
+            > 如果有 1 个或以上的机器人用户 ID 注册成功，Code 都会返回 0。此时请参考 ErrorList 中的具体信息，确认操作结果。
+            >
+            > 如果全部机器人用户 ID 注册失败，Code 会返回相关返回码，具体请参考 [全局返回码](../return-codes.mdx)。
+
+            <table>
+              <thead>
+                <tr><th>返回码</th><th>描述</th><th>可能原因</th><th>处理建议</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>660000001</td><td>业务类通用错误。</td><td>服务端出错。</td><td>请重试，或联系 ZEGO 技术支持。</td></tr>
+                <tr><td>660000002</td><td>输入参数错误。</td><td>输入的参数缺失或不合法。</td><td>请检查输入的参数。</td></tr>
+                <tr><td>660300005</td><td>调用接口的频率超出了 AppID 级别限制。</td><td></td><td>请稍后再试，或参考相关文档了解调用频率。</td></tr>
+                <tr><td>660000012</td><td>UserID 长度超过限制。</td><td>UserID 最大长度为 32 字节。</td><td>请确认 UserID 的长度。</td></tr>
+                <tr><td>660700001</td><td>请求过于频繁。</td><td>发起请求频率超过 20 次/秒。</td><td>请稍后再试。</td></tr>
+                <tr><td>660700002</td><td>机器人已存在。</td><td>发送请求的 UserID 已存在。</td><td>请避免重复注册相同的 UserID。</td></tr>
+                <tr><td>660700006</td><td>UserName 长度超过限制。</td><td>UserName 长度最大为 256 字节。</td><td>请确认 UserName 的长度。</td></tr>
+                <tr><td>660700007</td><td>UserAvatar 地址长度超过限制。</td><td>UserAvatar 地址长度最大为 500 字节。</td><td>请确认 UserAvatar 的长度。</td></tr>
+              </tbody>
+            </table>
+          example: 0
+        Message:
+          type: string
+          description: 操作结果描述。
+          example: "success"
+        RequestId:
+          type: string
+          description: 请求 ID。
+          example: "343649807833778782"
+        ErrorList:
+          type: array
+          description: |
+            失败信息列表。
+            <ul>
+            <li>Code 为 0：
+              <br/>ErrorList 为空，全部机器人用户 ID 注册成功。
+              <br/>ErrorList 不为空，表示部分机器人用户 ID 注册失败，请参考 SubCode、SubMessage 处理。
+            </li>
+            <li>Code 不为 0：
+              <br/>ErrorList 为空，表示参数错误、接口频率限制、系统错误。
+              <br/>ErrorList 不为空，表示所有机器人用户 ID 都注册失败，请参考 SubCode、SubMessage 处理。
+            </li>
+            </ul>
+          items:
+            type: object
+            properties:
+              UserId:
+                type: string
+                description: 注册失败的机器人用户 ID。
+              SubCode:
+                type: integer
+                format: int32
+                description: 机器人注册失败的具体返回码。
+              SubMessage:
+                type: string
+                description: 机器人注册失败的原因说明。
+
+
 
 

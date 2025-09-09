@@ -3,6 +3,9 @@
   "favicon": "image/favicon.ico",
   "themeConfig": {
     "removeWatermark": true,
+    "api": {
+      "proxy": "/api/proxy"
+    },
     "colors": {
       "primaryLight": "#0055FF",
       "primaryDark": "#266EFF"
@@ -278,21 +281,107 @@
       {
         "specPaths": [
           "core_products/zim/zh/docs_zim_server_zh/user/batch-register-users.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/user/query-user-information.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/user/query-users-online-status.yaml",
           "core_products/zim/zh/docs_zim_server_zh/user/batch-add-friends.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-block-users.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-delete-friends.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-send-friend-requests.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/batch-unblock-users.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/change-the-alias-of-a-friend.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/check-blockships.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/check-friendships.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/delete-all-friends.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/modify-the-attributes-of-a-friend.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/modify-user-information.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-group-information-of-user-joined.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-the-blocklist.yaml",
           "core_products/zim/zh/docs_zim_server_zh/user/query-the-friend-list.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/user/modify-user-information.yaml"
+          "core_products/zim/zh/docs_zim_server_zh/user/query-user-information.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/user/query-users-online-status.yaml"
         ],
         "outputDir": "core_products/zim/zh/docs_zim_server_zh/user"
       },
       {
         "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/messaging/delete-all-messages-from-a-group-member.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/delete-all-messages-from-a-one-to-one-conversaiton-user.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/edit-a-message.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/import-group-messages.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/import-one-to-one-messages.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/push-message-to-all-users.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/query-messages.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/recall-a-group-message.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/recall-a-one-to-one-message.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/messaging/recall-a-room-message.yaml",
           "core_products/zim/zh/docs_zim_server_zh/messaging/send-a-one-to-one-message.yaml",
           "core_products/zim/zh/docs_zim_server_zh/messaging/send-group-messages.yaml",
-          "core_products/zim/zh/docs_zim_server_zh/messaging/recall-a-one-to-one-message.yaml"
+          "core_products/zim/zh/docs_zim_server_zh/messaging/send-room-messages.yaml"
         ],
         "outputDir": "core_products/zim/zh/docs_zim_server_zh/messaging"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/group/add-group-members.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/create-a-group.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/disband-a-group-chat.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/fetch-forbid-group-list.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/modify-group-specification-limits.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/mute-a-group.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/mute-group-members.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/query-group-info.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/query-group-list-in-the-app.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/query-group-member-list.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/remove-group-member.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/set-group-member-roles.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/set-nicknames-of-group-members.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/transfer-the-group-ownership.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/group/update-group-data.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/group"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/room/create-a-room.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/destroy-the-room.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/obtain-information-about-users-in-a-room.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/query-room-attributes.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/query-whether-a-user-is-in-a-room.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/remove-user-from-the-room.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/room/update-room-attributes.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/room"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/conversation/clear-the-unread-message-count-of-a-conversation.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/delete-a-conversation.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/mute-notifications-for-conversations.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/pin-conversations-to-the-top.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/query-conversation-list.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/query-the-message-list-of-group-chats.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/query-the-message-list-of-one-on-one-chats.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/conversation/set-conversation-marks.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/conversation"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/call-invitation/accept-a-call-invitation.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/call-invitation/reject-a-call-invitation.yaml",
+          "core_products/zim/zh/docs_zim_server_zh/call-invitation/send-a-call-invitation.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/call-invitation"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/bot/register-bots.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/bot"
+      },
+      {
+        "specPaths": [
+          "core_products/zim/zh/docs_zim_server_zh/zim-audio/obtain-a-license.yaml"
+        ],
+        "outputDir": "core_products/zim/zh/docs_zim_server_zh/zim-audio"
       },
       {
         "specPaths": [

@@ -22,23 +22,22 @@ paths:
       description: |
         通过该接口，可为一名用户批量修改至多 20 名好友的备注。如需上调（最多可为 50），请联系 ZEGO 技术支持。
 
-修改好友备注成功后，用户通过以下 ZIM SDK 的回调接口接收相关修改通知：
-
-| iOS-25% | Android-25% | macOS-25% | Windows-25% |
-|-----|---------|--------|---------|
-| [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-friend-info-updated-friend-info-list) | [onFriendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-friend-info-updated) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-friend-info-updated-friend-info-list) | [onFriendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-friend-info-updated) |
-
-| Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
-|-----|---------|---------|---------|
-| [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#friend-info-updated) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#friend-info-updated) | [onFriendInfoUpdated](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onFriendInfoUpdated.html) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-info-updated) |
-
-| uni-app \| uni-app x-25% | HarmonyOS-25% |
-|---------|---------|
-| [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-info-updated) |[friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#friend-info-updated)  |
+        修改好友备注成功后，用户通过以下 ZIM SDK 的回调接口接收相关修改通知：
+        
+        | iOS-25% | Android-25% | macOS-25% | Windows-25% |
+        |-----|---------|--------|---------|
+        | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_ios~protocol~ZIMEventHandler#zim-friend-info-updated-friend-info-list) | [onFriendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~java_android~class~ZIMEventHandler#on-friend-info-updated) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~objective-c_macos~protocol~ZIMEventHandler#zim-friend-info-updated-friend-info-list) | [onFriendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~cpp_windows~class~ZIMEventHandler#on-friend-info-updated) |
+        
+        | Web-25% | 小程序-25% | Flutter-25% | React Native-25% |
+        |-----|---------|---------|---------|
+        | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_web~interface~ZIMEventHandler#friend-info-updated) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_wxxcx~interface~ZIMEventHandler#friend-info-updated) | [onFriendInfoUpdated](https://pub.dev/documentation/zego_zim/latest/zego_zim/ZIMEventHandler/onFriendInfoUpdated.html) | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-info-updated) |
+        
+        | uni-app \| uni-app x-25% | HarmonyOS-25% |
+        |---------|---------|
+        | [friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_uni-app~interface~ZIMEventHandler#friend-info-updated) |[friendInfoUpdated](https://doc-zh.zego.im/article/api?doc=zim_API~javascript_harmony~interface~ZIMEventHandler#friend-info-updated)  |
 
         <Note title="调用频率限制">20  次/秒。</Note>
 
-        以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表请参考 [调用方式 - 公共请求参数](../accessing-server-apis.mdx#2-公共参数)。
       operationId: change-the-alias-of-a-friend
       parameters:
         - name: Action
@@ -56,7 +55,7 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        - $ref: '../shared-components.yaml#/components/parameters/IsTest'
+        
       requestBody:
         required: true
         content:
