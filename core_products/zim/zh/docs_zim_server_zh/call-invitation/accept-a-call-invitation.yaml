@@ -39,9 +39,8 @@ paths:
         <Note title="调用频率限制">20 次/秒。</Note>
 
         <Note title="说明">
-        FromUserId 仅支持数字、英文字符和以下特殊字符：! # $ % & ( ) + : ; < = . > ? @ [ ] ^ _ { } | ~
+        FromUserId 仅支持数字、英文字符和以下特殊字符：! # $ % & ( ) + : ; < = . > ? @ [ ] ^ _ { } | ~ 。
         </Note>
-
       operationId: accept-a-call-invitation
       parameters:
         - name: Action
@@ -59,13 +58,24 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AcceptACallInvitationRequest'
+        - name: FromUserId
+          in: query
+          required: true
+          description: 为此 ID（已在客户端调用 'login' 方法登录 ZIM 服务，或已调用 [服务端 API](./../user/batch-register-users.mdx) 完成注册）。
+          schema:
+            type: string
+        - name: CallId
+          in: query
+          required: true
+          description: 呼叫 ID。
+          schema:
+            type: string
+        - name: ExtendedData
+          in: query
+          required: false
+          description: 扩展字段，长度上限为 2 KB。
+          schema:
+            type: string
 
       responses:
         '200':
@@ -77,22 +87,6 @@ paths:
 
 components:
   schemas:
-    AcceptACallInvitationRequest:
-      type: object
-      required:
-        - FromUserId
-        - CallId
-      properties:
-        FromUserId:
-          type: string
-          description: 为此 ID（已在客户端调用 'login' 方法登录 ZIM 服务，或已调用 [服务端 API](./../user/batch-register-users.mdx) 完成注册）。
-        CallId:
-          type: string
-          description: 呼叫 ID。
-        ExtendedData:
-          type: string
-          description: 扩展字段，长度上限为 2 KB。
-
     AcceptACallInvitationResponse:
       type: object
       properties:
@@ -101,7 +95,7 @@ components:
           description: |
             返回码。
             
-            以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
+            以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
             <table>
               <thead>
                 <tr><th>返回码</th><th>说明</th><th>处理建议</th></tr>

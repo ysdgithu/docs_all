@@ -18,7 +18,7 @@ paths:
     post:
       tags:
         - CallInvitation
-      summary: 发起呼叫邀请
+      summary: CallInvite
       description: |
         通过该接口可以创建**普通模式**的呼叫邀请。
 
@@ -52,6 +52,13 @@ paths:
         
         <Note title="调用频率限制">20  次/秒。</Note>
 
+        <Note title="说明">
+        以下 `FromUserId` 和 `UserIds` 对应的用户已在客户端调用 `login` 方法登录 ZIM 服务，或开发者已调用 [服务端 API](./../user/batch-register-users.mdx) 注册相关的 userID。
+        </Note>
+
+        <Note title="说明">
+        FromUserId 和 UserIds 仅支持数字，英文字符和 {"'!'，'#'，'$'，'%'，'&'，'('，')'，'+'，''，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'"}。
+        </Note>
       operationId: send-a-call-invitation
       parameters:
         - name: Action
@@ -69,13 +76,46 @@ paths:
         - $ref: '../shared-components.yaml#/components/parameters/Timestamp'
         - $ref: '../shared-components.yaml#/components/parameters/Signature'
         - $ref: '../shared-components.yaml#/components/parameters/SignatureVersion'
-        
+
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SendACallInvitationRequest'
+              type: object
+              required:
+                - FromUserId
+                - UserIds
+              properties:
+                FromUserId:
+                  type: string
+                  description: 主叫用户 ID（已在客户端调用 'login' 方法登录 ZIM 服务，或已调用 [服务端 API](./../user/batch-register-users.mdx) 完成注册）。
+                  example: "user0"
+                UserIds:
+                  type: array
+                  items:
+                    type: string
+                    example: "uid1"
+                  description: 被叫用户列表，上限为 9 名用户。如需上调，请联系 ZEGO 技术支持。
+                  example: ["uid1", "uid2"]
+                Timeout:
+                  type: integer
+                  description: 呼叫超时时间，单位为秒，取值范围为 (0, 600]。传 0 或为空取默认值 90。
+                  default: 90
+                  example: 90
+                ExtendedData:
+                  type: string
+                  description: 扩展字段，长度上限为 2 KB。
+                  example: "ExtendedData"
+                OfflinePush:
+                  type: object
+                  description: 离线推送配置，详情请参考 <a href="https://doc-zh.zego.im/article/17609#offlinePush">MessageBody 说明 - OfflinePush 说明。</a>
+                  example:
+                    Enable: 1
+                    Title: "title"
+                    Content: "content"
+                    Payload: "payload"
+
       responses:
         '200':
           description: 成功响应
@@ -86,20 +126,86 @@ paths:
 
 components:
   schemas:
-    SendACallInvitationRequest:
+    SendACallInvitationResponse:
       type: object
       properties:
-        # TODO: 根据具体接口定义请求参数
-        placeholder:
-          type: string
-          description: 占位符，需要根据实际接口定义
+        Code:
+          type: integer
+          description: |
+            返回码。
+            
+            以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
 
-    SendACallInvitationResponse:
-      allOf:
-        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
-        - type: object
-          properties:
-            # TODO: 根据具体接口定义响应数据
-            Data:
-              type: object
-              description: 响应数据，需要根据实际接口定义
+            <table>
+            <tbody><tr>
+            <th>返回码</th>
+            <th>说明</th>
+            <th>处理建议</th>
+            </tr>
+            <tr>
+            <td>660000002</td>
+            <td>参数错误。</td>
+            <td>请检查请求参数。</td>
+            </tr>
+            <tr>
+            <td>660300005</td>
+            <td>调用接口的频率超出了 AppID 级别限制。</td>
+            <td>请稍后再试。</td>
+            </tr>
+            <tr>
+            <td>660500002</td>
+            <td>操作者用户未注册。</td>
+            <td>请先让操作者用户注册 ZIM 服务。</td>
+            </tr>
+            <tr>
+            <td>660900003</td>
+            <td>所有被叫用户需为已注册。</td>
+            <td>请检查被叫用户的注册状态或稍后再试。</td>
+            </tr>
+            <tr>
+            <td>660900007</td>
+            <td>被叫用户列表长度超过限制。</td>
+            <td>请缩短被叫用户列表长度，或联系 ZEGO 技术支持上调上限。</td>
+            </tr>
+            </tbody></table>
+          example: 0
+        Message:
+          type: string
+          description: 操作结果描述。
+          example: "success"
+        RequestId:
+          type: string
+          description: 请求 ID。
+          example: "343649807833778782"
+        CallId:
+          type: string
+          description: 呼叫 ID。
+          example: "12261423186766631832"
+        CreateTime:
+          type: string
+          description: 呼叫邀请创建时间戳。
+          example: "1713249504000"
+        ErrorUsers:
+          type: array
+          description: |
+            邀请失败用户信息。
+            - Code 为 0：
+              - ErrorUsers 为空，向全部指定用户发起邀请成功。
+              - ErrorUsers 不为空，表示向部分指定用户发起邀请失败，请参考 SubCode 处理。
+            - Code 不为 0：
+              - ErrorUsers 为空，表示参数错误、接口频率限制、系统错误。
+              - ErrorUsers 不为空，表示向全部指定用户发起邀请失败。
+          items:
+            type: object
+            properties:
+              UserId:
+                type: string
+                description: 失败用户 ID。
+                example: "uid2"
+              SubCode:
+                type: number
+                description: 失败的具体返回码。
+                example: 660500002
+          example:
+            - UserId: "uid2"
+              SubCode: 660500002
