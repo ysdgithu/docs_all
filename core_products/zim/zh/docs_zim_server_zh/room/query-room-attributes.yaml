@@ -18,7 +18,7 @@ paths:
     post:
       tags:
         - Room
-      summary: 查询房间属性
+      summary: QueryRoomAttribute
       description: |
         查询指定房间 ID 的所有房间属性。
 
@@ -46,8 +46,11 @@ paths:
         required: true
         content:
           application/json:
-            schema:
+              schema:
               $ref: '#/components/schemas/QueryRoomAttributesRequest'
+              example:
+                RoomId: "room123"
+                FromUserId: "fromUserId"
       responses:
         '200':
           description: 成功响应
@@ -55,23 +58,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/QueryRoomAttributesResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "req-123456789"
+                AttributeSeq: 10
+                Attributes:
+                  - Key: "1"
+                    Value: "attr1"
+                    AutoDelete: 0
+                  - Key: "2"
+                    Value: "attr2"
+                    AutoDelete: 1
 
 components:
   schemas:
     QueryRoomAttributesRequest:
       type: object
+      required:
+        - FromUserId
+        - RoomId
       properties:
-        # TODO: 根据具体接口定义请求参数
-        placeholder:
+        FromUserId:
           type: string
-          description: 占位符，需要根据实际接口定义
+          description: 操作者，需要是已注册状态，该用户不会自动加入房间。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'。
+          example: "fromUserId"
+        RoomId:
+          type: string
+          description: 房间 ID。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'。
+          example: "room123"
 
     QueryRoomAttributesResponse:
-      allOf:
-        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
-        - type: object
-          properties:
-            # TODO: 根据具体接口定义响应数据
-            Data:
-              type: object
-              description: 响应数据，需要根据实际接口定义
+      type: object
+      properties:
+        Code:
+          type: number
+          description: |
+            返回状态码（ 0 表示成功）。
+            
+            以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
+
+            <table>
+            <tbody><tr>
+            <th>返回码</th>
+            <th>说明</th>
+            <th>处理建议</th>
+            </tr>
+            <tr>
+            <td>660000002</td>
+            <td>参数错误。</td>
+            <td>请检查参数。</td>
+            </tr>
+            <tr>
+            <td>660300005</td>
+            <td>频率限制。</td>
+            <td>请稍后再尝试。</td>
+            </tr>
+            </tbody></table>
+          example: 0
+        Message:
+          type: string
+          description: 返回状态信息。
+          example: "success"
+        RequestId:
+          type: string
+          description: 请求唯一标识。
+          example: "req-123456789"
+        AttributeSeq:
+          type: number
+          description: 房间属性 seq。
+          example: 10
+        Attributes:
+          type: array
+          description: 房间属性列表。
+          items:
+            type: object
+            properties:
+              Key:
+                type: string
+                description: 房间属性 key 值。
+                example: "1"
+              Value:
+                type: string
+                description: 房间属性 value 值。
+                example: "attr1"
+              AutoDelete:
+                type: number
+                description: 是否自动删除。
+                example: 0

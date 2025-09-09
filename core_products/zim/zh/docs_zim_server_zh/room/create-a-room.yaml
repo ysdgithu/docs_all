@@ -18,7 +18,7 @@ paths:
     post:
       tags:
         - Room
-      summary: 创建房间
+      summary: CreateRoom
       description: |
         开发者可以调用此接口创建房间，创建房间时支持设置自定义的房间属性。一个房间最多可设置 20 个房间属性，如果需要增加房间属性数量上限，请联系 ZEGO 技术支持。
 
@@ -48,6 +48,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateARoomRequest'
+            example:
+              FromUserId: "User1"
+              RoomId: "Room1"
+              RoomName: "RoomName1"
+              DestroyDelayTime: 3600
+              Attributes:
+                - Key: "k1"
+                  Value: "v1"
+                  AutoDelete: 0
+                - Key: "k2"
+                  Value: "v2"
+                  AutoDelete: 1
       responses:
         '200':
           description: 成功响应
@@ -60,18 +72,97 @@ components:
   schemas:
     CreateARoomRequest:
       type: object
+      required:
+        - FromUserId
+        - RoomId
       properties:
-        # TODO: 根据具体接口定义请求参数
-        placeholder:
+        FromUserId:
           type: string
-          description: 占位符，需要根据实际接口定义
+          description: 操作者，需要是已注册状态，该用户不会自动加入房间。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'。
+          example: "User1"
+        RoomId:
+          type: string
+          description: 房间 ID。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'。
+          example: "Room1"
+        RoomName:
+          type: string
+          description: 房间名称。最大长度不超过 64 字节的字符串。
+          example: "RoomName1"
+        DestroyDelayTime:
+          type: integer
+          description: |
+            房间人数为 0 时，房间延迟销毁时间，单位为秒。最长房间延迟销毁时间默认为 10800 秒。
+
+            > **注意**
+            > 
+            > 当房间延迟销毁时，房间属性和房间用户属性默认不保留。如果需要保留，请联系 ZEGO 技术支持。
+          example: 3600
+        Attributes:
+          type: array
+          description: 要添加的属性信息。
+          items:
+            type: object
+            required:
+              - Key
+              - Value
+            properties:
+              Key:
+                type: string
+                description: 房间属性 key。
+                example: "k1"
+              Value:
+                type: string
+                description: 房间属性 value。
+                example: "v1"
+              AutoDelete:
+                type: integer
+                description: 用户退出时，是否自动删除， 0：不自动删除， 1：自动删除。创建房间时不会把 FromUserId 加入到房间，只会在其先进入房间，然后再退出时触发删除操作。
+                example: 0
 
     CreateARoomResponse:
-      allOf:
-        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
-        - type: object
+          type: object
           properties:
             # TODO: 根据具体接口定义响应数据
-            Data:
-              type: object
-              description: 响应数据，需要根据实际接口定义
+            Code:
+              type: number
+              description: |
+                返回状态码（ 0 表示成功）。
+                
+                以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
+
+                <table>
+                <tbody><tr>
+                <th>返回码</th>
+                <th>说明</th>
+                <th>处理建议</th>
+                </tr>
+                <tr>
+                <td>660000002</td>
+                <td>参数错误。</td>
+                <td>请检查参数。</td>
+                </tr>
+                <tr>
+                <td>660300005</td>
+                <td>频率限制。</td>
+                <td>请稍后再尝试。</td>
+                </tr>
+                <tr>
+                <td>660300014</td>
+                <td>房间已存在。</td>
+                <td>检查房间是否已经创建。</td>
+                </tr>
+                <tr>
+                <td>660300015</td>
+                <td>房间数超出上限。</td>
+                <td>检查房间数是否超出上限，或者联系技术支持扩容。</td>
+                </tr>
+                </tbody></table>
+              example: 0
+            Message:
+              type: string
+              description: 返回状态信息。
+              example: "success"
+            RequestId:
+              type: string
+              description: 请求唯一标识。
+              example: "req-123456789"

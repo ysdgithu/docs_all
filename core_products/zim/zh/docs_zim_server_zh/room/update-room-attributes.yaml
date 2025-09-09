@@ -18,7 +18,7 @@ paths:
     post:
       tags:
         - Room
-      summary: 更新房间属性
+      summary: ModifyRoomAttribute
       description: |
         根据房间 ID 更新自定义的房间属性。一个房间最多可设置 20 个房间属性，如果需要增加房间属性数量上限，请联系 ZEGO 技术支持。
 
@@ -60,8 +60,20 @@ paths:
         required: true
         content:
           application/json:
-            schema:
+              schema:
               $ref: '#/components/schemas/UpdateRoomAttributesRequest'
+              example:
+                RoomId: "room123"
+                FromUserId: "fromUserId"
+                Attributes:
+                  - Action: 0
+                    Key: "attribute1"
+                    Value: "value1"
+                    AutoDelete: 1
+                  - Action: 1
+                    Key: "attribute2"
+                    Value: ""
+                    AutoDelete: 0
       responses:
         '200':
           description: 成功响应
@@ -69,23 +81,113 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateRoomAttributesResponse'
+              example:
+                Code: 0
+                Message: "success"
+                RequestId: "req-123456789"
+                ErrKeyList:
+                  - SubCode: 1
+                    Key: "attr1"
+                  - SubCode: 2
+                    Key: "attr2"
 
 components:
   schemas:
     UpdateRoomAttributesRequest:
       type: object
+      required:
+        - FromUserId
+        - RoomId
+        - Attributes
       properties:
-        # TODO: 根据具体接口定义请求参数
-        placeholder:
+        FromUserId:
           type: string
-          description: 占位符，需要根据实际接口定义
+          description: 操作者，需要是已注册状态，该用户不会自动加入房间。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，' '，'{'，'}'，'|'，'~'。
+          example: "fromUserId"
+        RoomId:
+          type: string
+          description: 房间 ID。仅支持数字，英文字符和 '!'，'#'，'$'，'%'，'&'，'('，')'，'+'，'-'，':'，';'，'<'，'='，'.'，'>'，'?'，'@'，'['，']'，'^'，'_'，'{'，'}'，'|'，'~'。
+          example: "room123"
+        Attributes:
+          type: array
+          description: 要更新的房间属性信息。
+          items:
+            type: object
+            required:
+              - Action
+              - Key
+            properties:
+              Action:
+                type: number
+                description: 删除还是设置，0设置，1删除。
+                example: 0
+              Key:
+                type: string
+                description: 房间属性 key。
+                example: "attribute1"
+              Value:
+                type: string
+                description: 房间属性 value。
+                example: "value1"
+              AutoDelete:
+                type: number
+                description: 用户退出时，是否自动删除，0：不自动删除，1：自动删除。如果 FromUserId 不在房间内，则会在其先进入房间后，然后再退出时触发删除操作。
+                example: 1
+              StopOnError:
+                type: number
+                description: |
+                  是否开启快速失败，默认为关闭。
+                  - `0`: 关闭快速失败。执行遇到错误时，记录当前属性并继续执行后续的更新操作，执行结束后返回所有记录到的属性。
+                  - `1`: 开启快速失败。执行遇到错误时，停止更新操作并返回本次更新的属性，已执行成功的更新操作会保留。
+                example: 0
 
     UpdateRoomAttributesResponse:
-      allOf:
-        - $ref: '../shared-components.yaml#/components/schemas/StandardResponse'
-        - type: object
-          properties:
-            # TODO: 根据具体接口定义响应数据
-            Data:
-              type: object
-              description: 响应数据，需要根据实际接口定义
+      type: object
+      properties:
+        Code:
+          type: number
+          description: |
+            返回状态码（ 0 表示成功）。
+            
+            以下仅列出了接口业务逻辑相关的返回码，完整返回码请参考 [全局返回码](./../return-codes.mdx)。
+
+            <table>
+            <tbody><tr>
+            <th>返回码</th>
+            <th>说明</th>
+            <th>处理建议</th>
+            </tr>
+            <tr>
+            <td>660000002</td>
+            <td>参数错误。</td>
+            <td>请检查参数。</td>
+            </tr>
+            <tr>
+            <td>660300005</td>
+            <td>频率限制。</td>
+            <td>请稍后再尝试。</td>
+            </tr>
+            </tbody></table>
+          example: 0
+        Message:
+          type: string
+          description: 返回状态信息。
+          example: "success"
+        RequestId:
+          type: string
+          description: 请求唯一标识。
+          example: "req-123456789"
+        ErrKeyList:
+          type: array
+          description: 错误的 key 列表（仅失败时返回）。
+          items:
+            type: object
+            properties:
+              SubCode:
+                type: number
+                description: 错误码。
+                example: 1
+              Key:
+                type: string
+                description: 出现错误的 key 值。
+                example: "attr1"
